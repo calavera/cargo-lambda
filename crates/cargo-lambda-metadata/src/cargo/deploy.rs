@@ -369,6 +369,7 @@ impl FunctionDeployConfig {
             + self.timeout.is_some() as usize
             + self.runtime.is_some() as usize
             + self.description.is_some() as usize
+            + self.log_retention.is_some() as usize
             + self.vpc.as_ref().map_or(0, |vpc| vpc.count_fields())
             + self
                 .env_options
@@ -419,6 +420,10 @@ impl FunctionDeployConfig {
 
         if let Some(description) = &self.description {
             state.serialize_field("description", &description)?;
+        }
+
+        if let Some(log_retention) = &self.log_retention {
+            state.serialize_field("log_retention", &log_retention)?;
         }
 
         if let Some(vpc) = &self.vpc {
@@ -638,5 +643,7 @@ mod tests {
             config.deploy.function_config.env_options.unwrap().env_var,
             Some(vec!["APP_ENV=production".to_string()])
         );
+
+        assert_eq!(config.deploy.function_config.log_retention, Some(14));
     }
 }
